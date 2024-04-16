@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'ALB'
+
+Parameters:
+  ProjectPrefix:
+    Type: String
+    Default: 'demo'
+    Description: 'Name of Project prefix'
+  ProjectName:
+    Type: String
+    Description: 'Name of Project'
+  ProjectRepo:
+    Type: String
+    Description: 'Repo Path i.e GitHubUser/RepoName'
+  Key:
+    Type: String
+    Description: 'The key used to access the instance'
+  Subnet:
+    Type: String
+    Description: 'The subnet in the vpc'
+  SecurityGroup:
+    Type: String
+    Description: 'The security group'
+  AMIImage:
+    Type: AWS::EC2::Image::Id
+    Description: 'AMI image'
+
+Resources:
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMIImage
+      InstanceType: t4g.small
+      KeyName: !Ref Key
+      SubnetId: !Ref Subnet
+      SecurityGroupIds:
+        - !Ref SecurityGroup
+
+  ElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref Ec2Instance
