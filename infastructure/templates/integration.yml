@@ -1,43 +1,96 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'ALB'
+Description: 'ALB + ASG'
 
 Parameters:
-  ProjectPrefix:
-    Type: String
-    Default: 'demo'
-    Description: 'Name of Project prefix'
-  ProjectName:
-    Type: String
-    Description: 'Name of Project'
-  ProjectRepo:
-    Type: String
-    Description: 'Repo Path i.e GitHubUser/RepoName'
-  Key:
+  KeyName:
     Type: String
     Description: 'The key used to access the instance'
-  Subnet:
-    Type: String
-    Description: 'The subnet in the vpc'
-  SecurityGroup:
-    Type: String
-    Description: 'The security group'
   AMIImage:
     Type: AWS::EC2::Image::Id
     Description: 'AMI image'
+  VpcId:
+    Type: String
+    Description: 'VPC Id'
+  PublicSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: 'VPC Subnet Ids'
 
 Resources:
-  Ec2Instance:
-    Type: AWS::EC2::Instance
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      ImageId: !Ref AMIImage
-      InstanceType: t4g.small
-      KeyName: !Ref Key
-      SubnetId: !Ref Subnet
-      SecurityGroupIds:
-        - !Ref SecurityGroup
+      GroupDescription: ALB Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
 
-  ElasticIP:
-    Type: AWS::EC2::EIP
+  EC2LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
     Properties:
-      Domain: vpc
-      InstanceId: !Ref Ec2Instance
+      LaunchTemplateName: EC2_ASG_Template
+      LaunchTemplateData:
+        ImageId: !Ref AMIImage
+        InstanceType: t2.micro
+        KeyName: !Ref KeyName
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        UserData:
+          Fn::Base64: |
+            #!/bin/bash
+            yum update -y
+            yum install -y httpd
+            systemctl start httpd
+            systemctl enable httpd
+            echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
+
+  AppLoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      TargetType: instance
+      HealthCheckPath: /index.html
+      Port: 80
+      Protocol: HTTP
+
+  AppLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref SecurityGroup
+      Subnets: !Ref PublicSubnets
+
+  AppLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Protocol: HTTP
+      Port: 80
+      LoadBalancerArn: !Ref AppLoadBalancer
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref AppLoadBalancerTargetGroup
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate:
+        Version: !GetAtt EC2LaunchTemplate.LatestVersionNumber
+        LaunchTemplateId: !Ref EC2LaunchTemplate
+      MaxSize: 2
+      MinSize: 1
+      DesiredCapacity: 1
+      VPCZoneIdentifier: !Ref PublicSubnets
+      TargetGroupARNs:
+        - !Ref AppLoadBalancerTargetGroup

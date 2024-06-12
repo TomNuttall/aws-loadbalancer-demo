@@ -1,14 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'ECS VPC'
-
-Parameters:
-  ProjectPrefix:
-    Type: String
-    Default: 'demo'
-    Description: 'Name of Project prefix'
-  ProjectName:
-    Type: String
-    Description: 'Name of Project'
+Description: 'ALB VPC'
 
 Resources:
   VPC:
@@ -18,7 +9,7 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
 
-  PublicSubnet:
+  PublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
@@ -26,42 +17,44 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs ]
       MapPublicIpOnLaunch: true
 
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 20.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs ]
+      MapPublicIpOnLaunch: true
+
+  PublicSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 20.0.3.0/24
+      AvailabilityZone: !Select [2, !GetAZs ]
+      MapPublicIpOnLaunch: true
+
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
 
-  PublicSubnetRoute:
+  PublicSubnetARoute:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref PublicSubnet
+      SubnetId: !Ref PublicSubnetA
       RouteTableId: !Ref PublicRouteTable
 
-  SecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
+  PublicSubnetBRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      GroupName: !Sub '${ProjectPrefix}-sg-${ProjectName}'
-      GroupDescription: 'Outbound access needed for AWS services'
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
 
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
+  PublicSubnetCRoute:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetC
+      RouteTableId: !Ref PublicRouteTable
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
