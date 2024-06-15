@@ -2,18 +2,11 @@
 
 ## Overview
 
-- Create key pair
-
-```
-aws ec2 create-key-pair \
-    --key-name ec2test \
-    --key-type rsa \
-    --key-format pem \
-    --query "KeyMaterial" \
-    --output text > ec2test.pem
-```
+- ALB
+- ASG -> EC2 launch template
 
 - CloudFormation: Used to deploy infastructure on AWS.
+- Code Deploy used to deploy app code
 
 Note: t4g.small is free until dec 31 2024.
 https://repost.aws/articles/ARdZ3_Qv8TQdyWhmy4npRMRQ/announcing-amazon-ec2-t4g-free-trial-extension
@@ -35,3 +28,14 @@ https://repost.aws/articles/ARdZ3_Qv8TQdyWhmy4npRMRQ/announcing-amazon-ec2-t4g-f
   width="100%"
   height="auto"
 />
+
+### Create key pair
+
+```
+aws ec2 create-key-pair \
+    --key-name ec2test \
+    --key-type rsa \
+    --key-format pem \
+    --query "KeyMaterial" \
+    --output text > keyname.pem
+```
