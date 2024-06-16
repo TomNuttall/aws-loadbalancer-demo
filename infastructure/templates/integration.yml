@@ -117,6 +117,7 @@ Resources:
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
+      AutoScalingGroupName: !Sub '${ProjectPrefix}-asg-${ProjectName}'
       LaunchTemplate:
         Version: !GetAtt EC2LaunchTemplate.LatestVersionNumber
         LaunchTemplateId: !Ref EC2LaunchTemplate
