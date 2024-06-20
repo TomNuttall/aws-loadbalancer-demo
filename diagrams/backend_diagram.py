@@ -30,5 +30,5 @@ with Diagram("", filename="backend_diagram", outformat="png"):
 
     # user >> Edge(label="") >> route_53
     user >> app_load_balancer
-    github_action >> Edge(label="Saves Build") >> s3_bucket >> Edge(
+    github_action >> Edge(label="Deploys backend app to S3") >> s3_bucket >> Edge(
         label="Deploys to target group") >> code_deploy_group >> auto_scaling_group
