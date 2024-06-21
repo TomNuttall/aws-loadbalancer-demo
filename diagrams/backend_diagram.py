@@ -23,7 +23,8 @@ with Diagram("", filename="backend_diagram", outformat="png"):
 
             with Cluster("Target Group"):
                 auto_scaling_group = AutoScaling("Auto Scaling Group")
-                app_load_balancer >> Edge(label="") >> auto_scaling_group >> [
+                app_load_balancer >> Edge(label="") >> auto_scaling_group
+                auto_scaling_group - [
                     EC2("EC2 Instance"), EC2("EC2 Instance")]
 
         # route_53 >> app_load_balancer
