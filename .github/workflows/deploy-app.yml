@@ -19,20 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Setup Node
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '20'
-      #     cache: 'yarn'
-      #     cache-dependency-path: 'app/yarn.lock'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: 'app/yarn.lock'
 
-      # - name: Install Backend
-      #   run: yarn install
-      #   working-directory: ./app
+      - name: Install Backend
+        run: yarn install
+        working-directory: ./app
 
-      # - name: Test Backend
-      #   run: yarn test
-      #   working-directory: ./app
+      - name: Build Backend
+        run: yarn build:app
+        working-directory: ./app
+
+      - name: Test Backend
+        run: yarn test
+        working-directory: ./app
+
+      - name: Build Package folder
+        run: yarn build:release
+        working-directory: ./app
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -42,7 +50,7 @@ jobs:
           aws-region: eu-west-2
 
       - name: Upload Artifact to s3
-        run: aws deploy push --application-name ${{ secrets.CD_APPNAME }} --source app/ --s3-location s3://${{ secrets.S3BUCKET }}/app_package.zip --ignore-hidden-files
+        run: aws deploy push --application-name ${{ secrets.CD_APPNAME }} --source package --s3-location s3://${{ secrets.S3BUCKET }}/app_package.zip --ignore-hidden-files
 
       - name: Deploy code
         run: aws deploy create-deployment --application-name ${{ secrets.CD_APPNAME }} --deployment-group-name ${{ secrets.CD_GROUPNAME }} --s3-location bucket=${{ secrets.S3BUCKET }},key=app_package.zip,bundleType=zip --file-exists-behavior OVERWRITE
