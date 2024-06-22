@@ -1,2 +1,2 @@
 #!/bin/bash
-pm2 start app/dist/server.js
+yarn pm2 start app/dist/server.js
