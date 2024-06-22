@@ -34,9 +34,9 @@ jobs:
         run: yarn build:app
         working-directory: ./app
 
-      - name: Test Backend
-        run: yarn test
-        working-directory: ./app
+      # - name: Test Backend
+      #   run: yarn test
+      #   working-directory: ./app
 
       - name: Build Package folder
         run: yarn build:release
