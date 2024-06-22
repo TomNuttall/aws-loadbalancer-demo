@@ -1,2 +1,2 @@
 #!/bin/bash
-service httpd start
+pm2 start app/dist/server.js

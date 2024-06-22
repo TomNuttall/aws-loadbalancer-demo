@@ -1,2 +1,3 @@
 #!/bin/bash
-yum install -y httpd
+cd app
+yarn install

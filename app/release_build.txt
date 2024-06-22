@@ -1,0 +1,5 @@
+dist/
+scripts/
+appspec.yml
+package.json
+yarn.lock
