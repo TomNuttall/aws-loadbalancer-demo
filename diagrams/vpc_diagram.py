@@ -5,17 +5,17 @@ from diagrams.aws.storage import S3
 from diagrams.aws.network import InternetGateway, PublicSubnet, PrivateSubnet, ALB, Endpoint
 from diagrams.onprem.network import Internet
 
-with Diagram("", filename="vpc_diagram", outformat="png"):
+with Diagram("", filename="vpc_diagram", outformat="png", direction="TB"):
     user = User("User")
     internet = Internet("Internet")
 
     with Cluster("AWS"):
         s3 = S3("S3")
 
-        with Cluster("VPC"):
-            s3Endpoint = Endpoint("VPC Gateway\nEndpoint")
+        s3Endpoint = Endpoint("VPC Gateway\nEndpoint")
+        ec2InstanceEndpoint = Endpoint("EC2 Instance Connect\nEndpoint")
 
-            ec2InstanceEndpoint = Endpoint("EC2 Instance Connect\nEndpoint")
+        with Cluster("VPC"):
             igw = InternetGateway("Internet\nGateway")
 
             with Cluster("Public Subnet"):
@@ -27,11 +27,13 @@ with Diagram("", filename="vpc_diagram", outformat="png"):
 
                 with Cluster("Target Group"):
                     asg = AutoScaling("Auto Scaling Group")
-                    asg - [
-                        EC2("EC2 Instance"), EC2("EC2 Instance")]
+                    asg - [EC2("EC2 Instance"), EC2("EC2 Instance")]
 
-            asg << alb
-            asg >> s3Endpoint >> s3
+        asg << alb
+        asg >> s3Endpoint >> s3
+        asg << ec2InstanceEndpoint
 
-    asg << ec2InstanceEndpoint << user
-    alb << igw << internet
+        alb << igw
+
+    ec2InstanceEndpoint << user
+    igw << internet
