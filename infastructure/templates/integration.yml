@@ -24,7 +24,7 @@ Parameters:
     Description: 'VPC Subnet Ids'
 
 Resources:
-  SecurityGroup:
+  ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: ALB Security Group
@@ -43,14 +43,24 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
 
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: App Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+
   AppLoadBalancerTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       VpcId: !Ref VpcId
       TargetType: instance
-      HealthCheckPath: /index.html
       Port: 3000
       Protocol: HTTP
+      # Protocol: HTTPS
 
   AppLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -58,7 +68,7 @@ Resources:
       Type: application
       Scheme: internet-facing
       SecurityGroups:
-        - !Ref SecurityGroup
+        - !Ref ALBSecurityGroup
       Subnets: !Ref PublicSubnets
 
   AppLoadBalancerListener:
@@ -120,7 +130,7 @@ Resources:
     Type: AWS::EC2::InstanceConnectEndpoint
     Properties:
       SecurityGroupIds:
-        - !Ref SecurityGroup
+        - !Ref AppSecurityGroup
       SubnetId: !Select [0, !Ref PrivateSubnets]
 
   EC2LaunchTemplate:
@@ -134,7 +144,7 @@ Resources:
         IamInstanceProfile:
           Name: !Ref ServerProfile
         SecurityGroupIds:
-          - !Ref SecurityGroup
+          - !Ref AppSecurityGroup
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash
@@ -160,20 +170,20 @@ Resources:
       TargetGroupARNs:
         - !Ref AppLoadBalancerTargetGroup
 
-  ScheduledActionOn:
-    Type: AWS::AutoScaling::ScheduledAction
-    Properties:
-      AutoScalingGroupName: !Ref AutoScalingGroup
-      MaxSize: '2'
-      MinSize: '1'
-      DesiredCapacity: '1'
-      Recurrence: '0 9 * * *'
+  # ScheduledActionOn:
+  #   Type: AWS::AutoScaling::ScheduledAction
+  #   Properties:
+  #     AutoScalingGroupName: !Ref AutoScalingGroup
+  #     MaxSize: '2'
+  #     MinSize: '1'
+  #     DesiredCapacity: '1'
+  #     Recurrence: '0 9 * * *'
 
-  ScheduledActionOff:
-    Type: AWS::AutoScaling::ScheduledAction
-    Properties:
-      AutoScalingGroupName: !Ref AutoScalingGroup
-      MaxSize: '0'
-      MinSize: '0'
-      DesiredCapacity: '0'
-      Recurrence: '0 17 * * *'
+  # ScheduledActionOff:
+  #   Type: AWS::AutoScaling::ScheduledAction
+  #   Properties:
+  #     AutoScalingGroupName: !Ref AutoScalingGroup
+  #     MaxSize: '0'
+  #     MinSize: '0'
+  #     DesiredCapacity: '0'
+  #     Recurrence: '0 17 * * *'
