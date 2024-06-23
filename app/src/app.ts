@@ -1,4 +1,5 @@
 import express, { Express } from 'express'
+import cors from 'cors'
 import path from 'path'
 import bodyparser from 'body-parser'
 import router from './routes/index.route'
@@ -13,6 +14,7 @@ app.set('view engine', 'pug')
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
+app.use(cors())
 
 // Routes
 app.use('/', router)
