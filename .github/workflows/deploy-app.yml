@@ -34,9 +34,9 @@ jobs:
         run: npm run build:app
         working-directory: ./app
 
-      # - name: Test Backend
-      #   run: npm run test
-      #   working-directory: ./app
+      - name: Test Backend
+        run: npm run test
+        working-directory: ./app
 
       - name: Build Package folder
         run: npm run build:release
