@@ -1,6 +1,6 @@
 class IndexController {
   async get() {
-    return { title: 'Test App', message: 'Welcome! v5' }
+    return { title: 'Test App', message: 'Welcome! v6' }
   }
 }
 
