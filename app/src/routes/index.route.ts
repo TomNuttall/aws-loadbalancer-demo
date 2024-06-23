@@ -6,8 +6,6 @@ const controller = new IndexController()
 
 router.get('/', async (req: Request, res: Response) => {
   const result = await controller.get()
-  console.log(result)
-
   res.render('home', result)
 })
 
