@@ -1,2 +1,2 @@
 #!/bin/bash
-pm2 start app/dist/server.js
+pm2 start dist/server.js
