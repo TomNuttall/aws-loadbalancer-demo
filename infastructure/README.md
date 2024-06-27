@@ -8,8 +8,7 @@
 - CloudFormation: Used to deploy infastructure on AWS.
 - Code Deploy used to deploy app code
 
-Note: t4g.small is free until dec 31 2024.
-https://repost.aws/articles/ARdZ3_Qv8TQdyWhmy4npRMRQ/announcing-amazon-ec2-t4g-free-trial-extension
+Note: App Load Balancer and NAT Gateway have a public ipv4 address attached so will have a cost for been provisined
 
 ## Architecture Diagram
 
