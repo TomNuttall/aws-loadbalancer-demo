@@ -13,3 +13,11 @@ Code Deploy used for deployments.
   width="100%"
   height="auto"
 />
+
+<img
+  src='./diagrams/vpc_diagram.png'
+  raw=true
+  alt='AWS VPC Diagram'
+  width="100%"
+  height="auto"
+/>
