@@ -14,6 +14,9 @@ Code Deploy used for deployments.
   height="auto"
 />
 
+
+VPC setup
+
 <img
   src='./diagrams/vpc_diagram.png'
   raw=true
