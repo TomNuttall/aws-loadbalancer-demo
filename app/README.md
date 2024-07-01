@@ -8,7 +8,7 @@ _Simple typescript express app to test out a route._
 
 ### Run Locally
 
-``yarn dev`
+`yarn dev`
 
 ### Tests
 
