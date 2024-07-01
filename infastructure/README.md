@@ -13,7 +13,7 @@ Create (not needed if using console to connect)
 
 ```
 aws ec2 create-key-pair \
-    --key-name ec2test \
+    --key-name keyname \
     --key-type rsa \
     --key-format pem \
     --query "KeyMaterial" \
