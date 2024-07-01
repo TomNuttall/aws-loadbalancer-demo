@@ -1,6 +1,6 @@
 # App
 
-_Simple express app to test out a route._
+_Simple typescript express app to test out a route._
 
 ## Overview
 
