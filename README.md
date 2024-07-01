@@ -1,8 +1,8 @@
 # aws-loadbalancer-demo
 
-Demo Project: Simple App deployed to EC2 instance. Uses auto scaling and alb.
+Demo Project to explore setting up Auto Scaling, Application Load Balancing and Code Deploy for deployments.
 
-Code Deploy used for deployments.
+Uses a Simple Express App for testing
 
 ## Architecture Diagram
 
