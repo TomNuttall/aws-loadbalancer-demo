@@ -2,7 +2,7 @@
 
 Demo Project to explore setting up an EC2 workflow with Auto Scaling, Application Load Balancing and Code Deploy.
 
-Uses a Simple Express App for testing
+Uses a Simple Express App for testing.
 
 ## Architecture Diagram
 
