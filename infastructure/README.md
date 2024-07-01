@@ -17,6 +17,8 @@ Note: App Load Balancer and NAT Gateways have promisioned hourly costs even when
   height="auto"
 />
 
+VPC
+
 <img
   src='../diagrams/vpc_diagram.png'
   raw=true
