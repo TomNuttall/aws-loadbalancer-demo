@@ -7,6 +7,19 @@
 
 Note: App Load Balancer and NAT Gateways have promisioned hourly costs even when idle
 
+### EC2 key pair
+
+Create (not needed if using console to connect)
+
+```
+aws ec2 create-key-pair \
+    --key-name ec2test \
+    --key-type rsa \
+    --key-format pem \
+    --query "KeyMaterial" \
+    --output text > keyname.pem
+```
+
 ## Architecture Diagram
 
 <img
@@ -27,13 +40,4 @@ VPC
   height="auto"
 />
 
-### Create key pair
 
-```
-aws ec2 create-key-pair \
-    --key-name ec2test \
-    --key-type rsa \
-    --key-format pem \
-    --query "KeyMaterial" \
-    --output text > keyname.pem
-```
