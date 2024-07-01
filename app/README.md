@@ -1,5 +1,15 @@
 # App
 
-# AppSpec/Scripts
+_Simple express app to test out a route._
 
-Used for CodeDeploy
+## Overview
+
+- AppSpec used for CodeDeploy
+
+### Run Locally
+
+``yarn dev`
+
+### Tests
+
+`yarn test`

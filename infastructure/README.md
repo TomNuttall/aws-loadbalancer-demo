@@ -2,13 +2,10 @@
 
 ## Overview
 
-- ALB
-- ASG -> EC2 launch template
-
 - CloudFormation: Used to deploy infastructure on AWS.
-- Code Deploy used to deploy app code
+- GitHub action: deploy.yml runs on change to app folder. Builds + tests app and creates CodeDeploy deployment from S3.
 
-Note: App Load Balancer and NAT Gateway have a public ipv4 address attached so will have a cost for been provisined
+Note: App Load Balancer and NAT Gateways have promisioned hourly costs even when idle
 
 ## Architecture Diagram
 
