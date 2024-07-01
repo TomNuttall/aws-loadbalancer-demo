@@ -1,6 +1,6 @@
 # aws-loadbalancer-demo
 
-Demo Project to explore setting up Auto Scaling, Application Load Balancing and Code Deploy for deployments.
+Demo Project to explore setting up an EC2 workflow with Auto Scaling, Application Load Balancing and Code Deploy for deployments.
 
 Uses a Simple Express App for testing
 
