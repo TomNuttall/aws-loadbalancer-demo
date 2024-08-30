@@ -6,4 +6,14 @@ html(lang='en')
     title #{title}
     link(rel='stylesheet', href='/css/styles.css')
   body
+    header(class="header")
+      span(class="header__title")  Load Balancer Demo
+      a(class="header__project", href=link) 
+        img(class="header__github-icon" src='./images/github-mark.svg' alt='GitHub Project')
     block content
+    footer(class="footer")
+      span Photo by&nbsp;
+      a(href="https://unsplash.com/@coltonsturgeon?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash") Colton Sturgeon
+      span &nbsp;on&nbsp;
+      a(href="https://unsplash.com/photos/five-black-rocks-6KkYYqTEDwQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash") Unsplash
+  

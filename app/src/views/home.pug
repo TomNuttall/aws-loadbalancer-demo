@@ -3,5 +3,8 @@ extends common/base.pug
 
 block content
   div(class="content")
-    h1 #{title}
-    p #{message}
+    section(class="hero")
+      div(class="hero__content")
+        h1(class="hero__headline") #{title}
+        p(class="hero__subheadline") #{message}
+        img(class="hero__visual" src='./images/' + img_name alt='')

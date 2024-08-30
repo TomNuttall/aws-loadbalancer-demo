@@ -1,6 +1,11 @@
 class IndexController {
   async get() {
-    return { title: 'Test App', message: 'Welcome! v8' }
+    return {
+      title: 'Express App',
+      message: 'Running on 127.0.0.1',
+      link: 'https://github.com/TomNuttall/aws-loadbalancer-demo',
+      img_name: 'hero-bkgd.jpg',
+    }
   }
 }
 
