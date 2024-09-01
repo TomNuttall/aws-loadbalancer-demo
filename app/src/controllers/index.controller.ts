@@ -1,10 +1,23 @@
+interface IHomeViewProps {
+  title: string
+  message: string
+  img: {
+    name: string
+    alt: string
+  }
+}
+
 class IndexController {
-  async get() {
+  constructor(private serverId: string) {}
+
+  async get(): Promise<IHomeViewProps> {
     return {
       title: 'Express App',
-      message: 'Running on 127.0.0.1',
-      link: 'https://github.com/TomNuttall/aws-loadbalancer-demo',
-      img_name: 'hero-bkgd.jpg',
+      message: `Served by ${this.serverId}`,
+      img: {
+        name: 'hero-bkgd.jpg',
+        alt: 'Balancing Stones',
+      },
     }
   }
 }

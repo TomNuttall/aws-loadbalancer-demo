@@ -1,5 +1,9 @@
 :root {
   font-family: Ubuntu, system-ui, Helvetica, Arial, sans-serif;
+
+  --theme-background: #c5d5ea;
+  --theme-primary: whitesmoke;
+  --theme-secondary: #213547;
 }
 
 body {
@@ -10,15 +14,23 @@ body {
   display: flex;
   flex-direction: column;
 
-  background-color: #c5d5ea;
+  background-color: var(--theme-background);
+}
+
+a {
+  color: var(--theme-secondary);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   padding: 3rem 5rem 1rem 5rem;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 1.2rem;
+
+  @media only screen and (max-width: 768px) {
+    padding: 2rem 3rem 1rem 3rem;
+  }
 }
 
 .header__github-icon {
@@ -27,16 +39,31 @@ body {
 }
 
 .footer {
-  background-color: whitesmoke;
-  /* font-weight: 500; */
+  background-color: var(--theme-primary);
   margin-top: auto;
   padding: 2rem 2rem;
   display: flex;
   justify-content: center;
 }
 
+.hero {
+  display: flex;
+  column-gap: 12rem;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 4rem 0 4rem;
+
+  @media only screen and (max-width: 1280px) {
+    column-gap: 6rem;
+  }
+
+  @media only screen and (max-width: 768px) {
+    padding: 2rem 2rem 0 2rem;
+    flex-direction: column;
+  }
+}
+
 .hero__visual {
-  padding-top: 2rem;
   border-radius: 0.25rem;
   height: 300px;
   object-fit: cover;
@@ -45,38 +72,23 @@ body {
 .hero__content {
   display: flex;
   flex-direction: column;
-  padding: 2rem 1rem 4rem 1rem;
-  align-items: center;
+
+  @media only screen and (max-width: 768px) {
+    align-items: center;
+  }
 }
 
 .hero__headline {
-  font-size: 4rem;
-  font-weight: 600;
+  font-size: 3rem;
+  font-weight: 500;
   margin: 0;
-  padding: 0;
+  padding-bottom: 0.5rem;
 }
 
 .hero__subheadline {
-  font-size: 1.2rem;
-  margin: 0;
-  padding-top: 1rem;
-}
-
-.hero__cta {
-  text-decoration: none;
-  background-color: blue;
-  color: white;
+  width: fit-content;
+  padding: 1rem 2rem;
   border-radius: 0.25rem;
-  transition: all 0.1s ease;
-
-  padding: 0.75rem;
-}
-
-.hero__cta:hover {
-  filter: brightness(50%);
-}
-
-.hero__cta:focus {
-  outline: solid 2px var(--brand-focus);
-  outline-offset: 2px;
+  color: white;
+  background-color: var(--theme-secondary);
 }
