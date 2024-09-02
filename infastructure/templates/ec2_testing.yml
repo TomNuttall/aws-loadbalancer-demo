@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'EC2 testing will have no costs in free tier'
+
+Parameters:
+  ProjectPrefix:
+    Type: String
+  ProjectName:
+    Type: String
+
+  AMIImage:
+    Type: AWS::EC2::Image::Id
+    Description: 'AMI Image (Amazon Linux)'
+  VpcId:
+    Type: String
+    Description: 'VPC Id'
+  PublicSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: 'VPC Subnet Ids'
+
+Resources:
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: App Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+  EC2ConnectEndpoint:
+    Type: AWS::EC2::InstanceConnectEndpoint
+    Properties:
+      SecurityGroupIds:
+        - !Ref EndpointSecurityGroup
+      SubnetId: !Select [0, !Ref PublicSubnets]
+
+  EndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 Endpoint Security Group
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  EC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ProjectPrefix}-role-${ProjectName}-ec2-s3'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+  ServerProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      InstanceProfileName: !Sub '${ProjectPrefix}-profile-${ProjectName}-ec2'
+      Roles:
+        - !Ref EC2Role
+
+  EC2LaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: EC2_ASG_Template
+      LaunchTemplateData:
+        ImageId: !Ref AMIImage
+        InstanceType: t2.micro
+        IamInstanceProfile:
+          Name: !Ref ServerProfile
+        SecurityGroupIds:
+          - !Ref AppSecurityGroup
+          - !Ref EndpointSecurityGroup
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            dnf update -y
+            # Install Node 
+            curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+            dnf install -y nodejs
+            npm install -g pm2
+            # Install CodeDeploy
+            dnf install -y ruby wget
+            cd /home/ec2-user
+            wget https://aws-codedeploy-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/latest/install
+            chmod +x ./install
+            ./install auto > /tmp/logfile
+            service codedeploy-agent start
+
+  AutoScalingTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      TargetType: instance
+      Port: 3000
+      Protocol: HTTP
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: !Sub '${ProjectPrefix}-asg-${ProjectName}'
+      LaunchTemplate:
+        Version: !GetAtt EC2LaunchTemplate.LatestVersionNumber
+        LaunchTemplateId: !Ref EC2LaunchTemplate
+      MaxSize: 2
+      MinSize: 1
+      DesiredCapacity: 1
+      VPCZoneIdentifier: !Ref PublicSubnets
+      TargetGroupARNs:
+        - !Ref AutoScalingTargetGroup
