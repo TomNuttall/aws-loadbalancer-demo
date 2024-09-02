@@ -12,7 +12,7 @@ class IndexController {
 
   async get(): Promise<IHomeViewProps> {
     return {
-      title: 'Express App v9',
+      title: 'Express App',
       message: `Served by ${this.serverId}`,
       img: {
         name: 'hero-bkgd.jpg',
