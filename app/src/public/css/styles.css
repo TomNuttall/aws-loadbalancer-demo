@@ -2,7 +2,7 @@
   font-family: Ubuntu, system-ui, Helvetica, Arial, sans-serif;
 
   --theme-background: #c5d5ea;
-  --theme-primary: whitesmoke;
+  --theme-primary: #f5f5f5;
   --theme-secondary: #213547;
 }
 
@@ -11,14 +11,15 @@ body {
   margin: 0;
 
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
 
   background-color: var(--theme-background);
-}
-
-a {
-  color: var(--theme-secondary);
+  background-image: url('/images/bkgd.svg');
+  background-repeat: no-repeat;
+  /* background-attachment: fixed; */
+  background-position: bottom;
 }
 
 .header {
@@ -29,7 +30,7 @@ a {
   font-size: 1.2rem;
 }
 
-@media only screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .header {
     padding: 2rem 3rem 1rem 3rem;
   }
@@ -50,53 +51,44 @@ a {
 
 .hero {
   display: flex;
-  column-gap: 12rem;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem 4rem 0 4rem;
+  row-gap: 2rem;
 }
 
-@media only screen and (max-width: 1280px) {
+@media (max-width: 768px) {
   .hero {
-    column-gap: 6rem;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .hero {
-    padding: 2rem 2rem 0 2rem;
-    flex-direction: column;
-  }
-}
-
-.hero__visual {
-  border-radius: 0.25rem;
-  height: 300px;
-  object-fit: cover;
-}
-
-.hero__content {
-  display: flex;
-  flex-direction: column;
-}
-
-@media only screen and (max-width: 768px) {
-  .hero__content {
-    align-items: center;
+    row-gap: 1rem;
   }
 }
 
 .hero__headline {
-  font-size: 3rem;
+  font-size: 5rem;
   font-weight: 500;
   margin: 0;
-  padding-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .hero__headline {
+    font-size: 3rem;
+  }
 }
 
 .hero__subheadline {
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-align: center;
   width: fit-content;
+  margin: 0;
   padding: 1rem 2rem;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   color: white;
   background-color: var(--theme-secondary);
+}
+
+@media (max-width: 768px) {
+  .hero__subheadline {
+    font-size: 1.1rem;
+  }
 }

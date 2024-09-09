@@ -1,10 +1,6 @@
 interface IHomeViewProps {
   title: string
   message: string
-  img: {
-    name: string
-    alt: string
-  }
 }
 
 class IndexController {
@@ -14,10 +10,6 @@ class IndexController {
     return {
       title: 'Express App',
       message: `Served by ${this.serverId}`,
-      img: {
-        name: 'hero-bkgd.jpg',
-        alt: 'Balancing Stones',
-      },
     }
   }
 }
