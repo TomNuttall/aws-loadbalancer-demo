@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'EC2 testing will have no costs in free tier'
+Description: 'EC2 testing will have no ALB ip4 costs in free tier'
 
 Parameters:
   ProjectPrefix:
@@ -97,6 +97,8 @@ Resources:
             chmod +x ./install
             ./install auto > /tmp/logfile
             service codedeploy-agent start
+            # Install Cloudwatch Agent
+            dnf install -y amazon-cloudwatch-agent
 
   AutoScalingTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup

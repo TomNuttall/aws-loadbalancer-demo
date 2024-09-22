@@ -367,3 +367,11 @@ pyrightconfig.json
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 /package
+
+# CDK Context & Staging files
+infastructure/cdk/cdk.context.json
+infastructure/cdk/.cdk.staging/
+infastructure/cdk/cdk.out/
+infastructure/cdk/*.tabl.json
+infastructure/cdk/cdk-integ.out.*/
+!infastructure/cdk/lib
