@@ -4,6 +4,7 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling'
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
 import * as iam from 'aws-cdk-lib/aws-iam'
+import * as s3 from 'aws-cdk-lib/aws-s3'
 
 import 'dotenv/config'
 
@@ -16,6 +17,12 @@ interface CodeDeployStackProps extends cdk.StackProps {
 export class CodeDeployStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CodeDeployStackProps) {
     super(scope, id, props)
+
+    const deploymentBucket = new s3.Bucket(this, 'DeploymentBucket', {
+      versioned: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    })
 
     const codedeployApp = new codedeploy.ServerApplication(
       this,
@@ -32,11 +39,18 @@ export class CodeDeployStack extends cdk.Stack {
       {
         application: codedeployApp,
         autoScalingGroups: [props.asg],
-        //loadBalancer: codedeploy.LoadBalancer.application(props.targetGroup),
-        deploymentConfig: codedeploy.ServerDeploymentConfig.ONE_AT_A_TIME,
+        deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
         installAgent: true,
+        autoRollback: {
+          failedDeployment: true,
+        },
       },
     )
+
+    // const deployment = new s3deploy.BucketDeployment(this, 'DeployAssetsToS3', {
+    //   sources: [s3deploy.Source.asset(path.join(__dirname, 'deploy-assets'))],
+    //   destinationBucket: deploymentBucket,
+    // })
 
     const githubRole = new iam.Role(this, 'GitHubOidcRole', {
       assumedBy: new iam.FederatedPrincipal(
@@ -52,7 +66,6 @@ export class CodeDeployStack extends cdk.Stack {
       description: 'Role assumed by GitHub Actions to interact with CodeDeploy',
     })
 
-    // Add CodeDeploy permissions to the GitHub role
     githubRole.addToPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
@@ -69,13 +82,12 @@ export class CodeDeployStack extends cdk.Stack {
       }),
     )
 
-    // // Add S3 and other permissions if needed for deployments
-    // githubRole.addToPolicy(
-    //   new iam.PolicyStatement({
-    //     effect: iam.Effect.ALLOW,
-    //     actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
-    //     resources: ['arn:aws:s3:::YOUR_BUCKET_NAME/*'], // Replace with your S3 bucket
-    //   }),
-    // )
+    githubRole.addToPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+        resources: [`${deploymentBucket.bucketArn}/*`],
+      }),
+    )
   }
 }

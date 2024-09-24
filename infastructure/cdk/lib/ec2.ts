@@ -11,6 +11,7 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets'
 interface Ec2StackProps extends cdk.StackProps {
   vpc: ec2.IVpc
   certificateArn: string
+  domain: string
 }
 
 export class Ec2Stack extends cdk.Stack {
@@ -59,18 +60,15 @@ export class Ec2Stack extends cdk.Stack {
       'dnf install -y nodejs',
       'npm install -g pm2',
       'dnf install -y ruby wget',
-      // 'cd /home/ec2-user',
-      // `wget https://aws-codedeploy-${process.env.AWS_ACCOUNT_REGION}.s3.${process.env.AWS_ACCOUNT_REGION}.amazonaws.com/latest/install`,
-      // 'chmod +x ./install',
-      // './install auto > /tmp/logfile',
-      // 'service codedeploy-agent start',
-      // 'dnf install -y amazon-cloudwatch-agent',
     )
 
     const ec2Role = new iam.Role(this, 'EC2Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ReadOnlyAccess'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonEC2RoleforAWSCodeDeploy',
+        ),
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSSMManagedInstanceCore',
         ),
@@ -129,7 +127,7 @@ export class Ec2Stack extends cdk.Stack {
     const certificateArn = props.certificateArn
     const certificate = acm.Certificate.fromCertificateArn(
       this,
-      'MyCertificate',
+      'ALB Certificate',
       certificateArn,
     )
 
@@ -151,17 +149,17 @@ export class Ec2Stack extends cdk.Stack {
       },
     })
 
-    // const hostedZone = route53.HostedZone.fromLookup(this, 'MyHostedZone', {
-    //   domainName: 'example.com', // Replace with your domain
-    // })
+    const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
+      domainName: props.domain,
+    })
 
-    // // Add an alias record for the ALB in Route 53
-    // new route53.ARecord(this, 'AliasRecord', {
-    //   zone: hostedZone,
-    //   target: route53.RecordTarget.fromAlias(
-    //     new targets.LoadBalancerTarget(lb),
-    //   ),
-    //   recordName: 'www', // The subdomain, e.g., 'www.example.com'
-    // })
+    // Add an alias record for the ALB in Route 53
+    new route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      target: route53.RecordTarget.fromAlias(
+        new targets.LoadBalancerTarget(alb),
+      ),
+      recordName: 'test',
+    })
   }
 }

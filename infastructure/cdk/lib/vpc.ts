@@ -30,14 +30,5 @@ export class VPCStack extends cdk.Stack {
     this.vpc.addGatewayEndpoint('s3Endpoint', {
       service: ec2.GatewayVpcEndpointAwsService.S3,
     })
-
-    // const cfnEgressOnlyInternetGateway = new ec2.CfnEgressOnlyInternetGateway(
-    //   this,
-    //   'MyCfnEgressOnlyInternetGateway',
-    //   {
-    //     vpcId: 'vpcId',
-    //   },
-    // )
-    // this.vpc.privateSubnets[0].
   }
 }
