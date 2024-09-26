@@ -41,10 +41,10 @@ export class Ec2Stack extends cdk.Stack {
     )
 
     const instanceConnectEndpoints = props.vpc.privateSubnets.map(
-      ({ subnetId }) => {
+      ({ subnetId }, idx) => {
         return new ec2.CfnInstanceConnectEndpoint(
           this,
-          'InstanceConnectEndpoint',
+          `InstanceConnectEndpoint_${idx}`,
           {
             subnetId: subnetId, // Use private subnets
             securityGroupIds: [appSecurityGroup.securityGroupId],
@@ -66,9 +66,9 @@ export class Ec2Stack extends cdk.Stack {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ReadOnlyAccess'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'AmazonEC2RoleforAWSCodeDeploy',
-        ),
+        // iam.ManagedPolicy.fromAwsManagedPolicyName(
+        //   'AmazonEC2RoleforAWSCodeDeploy',
+        // ),
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSSMManagedInstanceCore',
         ),
@@ -77,6 +77,14 @@ export class Ec2Stack extends cdk.Stack {
         ),
       ],
     })
+
+    const instanceProfile = new iam.CfnInstanceProfile(
+      this,
+      'InstanceProfile',
+      {
+        roles: [ec2Role.roleName],
+      },
+    )
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'EC2_ASG_Template', {
       securityGroup: appSecurityGroup,

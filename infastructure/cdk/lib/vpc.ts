@@ -11,8 +11,7 @@ export class VPCStack extends cdk.Stack {
     super(scope, id, props)
 
     this.vpc = new ec2.Vpc(this, 'vpc', {
-      cidr: '12.0.0.0/23',
-      natGateways: 0, // 2
+      natGateways: 0, //2,
       maxAzs: 2,
       subnetConfiguration: [
         {

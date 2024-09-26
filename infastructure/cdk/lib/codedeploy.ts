@@ -6,8 +6,6 @@ import * as codedeploy from 'aws-cdk-lib/aws-codedeploy'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 
-import 'dotenv/config'
-
 interface CodeDeployStackProps extends cdk.StackProps {
   repoName: string
   asg: autoscaling.IAutoScalingGroup
@@ -28,7 +26,7 @@ export class CodeDeployStack extends cdk.Stack {
       this,
       'CodeDeployApp',
       {
-        applicationName: 'MyCodeDeployApp',
+        applicationName: 'CodeDeployApp',
       },
     )
 
@@ -47,18 +45,13 @@ export class CodeDeployStack extends cdk.Stack {
       },
     )
 
-    // const deployment = new s3deploy.BucketDeployment(this, 'DeployAssetsToS3', {
-    //   sources: [s3deploy.Source.asset(path.join(__dirname, 'deploy-assets'))],
-    //   destinationBucket: deploymentBucket,
-    // })
-
     const githubRole = new iam.Role(this, 'GitHubOidcRole', {
       assumedBy: new iam.FederatedPrincipal(
         `arn:aws:iam::${props.env?.account}:oidc-provider/token.actions.githubusercontent.com`,
         {
           StringEquals: {
             'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-            'token.actions.githubusercontent.com:sub': `repo:${props.repoName}`,
+            'token.actions.githubusercontent.com:sub': `repo:${props.repoName}:*`,
           },
         },
         'sts:AssumeRoleWithWebIdentity',
