@@ -9,4 +9,8 @@ router.get('/', async (req: Request, res: Response) => {
   res.render('home', result)
 })
 
+router.get('/health', async (req: Request, res: Response) => {
+  res.sendStatus(200)
+})
+
 export default router
