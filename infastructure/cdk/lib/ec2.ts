@@ -31,7 +31,7 @@ export class Ec2Stack extends cdk.Stack {
     appSecurityGroup.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(3000),
-      'Allow HTTP Access',
+      'Allow HTTPS Access',
     )
 
     appSecurityGroup.addIngressRule(
@@ -40,18 +40,16 @@ export class Ec2Stack extends cdk.Stack {
       'Allow SSH Access',
     )
 
-    const instanceConnectEndpoints = props.vpc.privateSubnets.map(
-      ({ subnetId }, idx) => {
-        return new ec2.CfnInstanceConnectEndpoint(
-          this,
-          `InstanceConnectEndpoint_${idx}`,
-          {
-            subnetId: subnetId, // Use private subnets
-            securityGroupIds: [appSecurityGroup.securityGroupId],
-          },
-        )
-      },
-    )
+    props.vpc.privateSubnets.map(({ subnetId }, idx) => {
+      return new ec2.CfnInstanceConnectEndpoint(
+        this,
+        `InstanceConnectEndpoint_${idx}`,
+        {
+          subnetId: subnetId, // Use private subnets
+          securityGroupIds: [appSecurityGroup.securityGroupId],
+        },
+      )
+    })
 
     const userData = ec2.UserData.forLinux()
     userData.addCommands(
@@ -66,9 +64,6 @@ export class Ec2Stack extends cdk.Stack {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ReadOnlyAccess'),
-        // iam.ManagedPolicy.fromAwsManagedPolicyName(
-        //   'AmazonEC2RoleforAWSCodeDeploy',
-        // ),
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSSMManagedInstanceCore',
         ),
@@ -77,14 +72,6 @@ export class Ec2Stack extends cdk.Stack {
         ),
       ],
     })
-
-    const instanceProfile = new iam.CfnInstanceProfile(
-      this,
-      'InstanceProfile',
-      {
-        roles: [ec2Role.roleName],
-      },
-    )
 
     const launchTemplate = new ec2.LaunchTemplate(this, 'EC2_ASG_Template', {
       securityGroup: appSecurityGroup,
@@ -152,8 +139,10 @@ export class Ec2Stack extends cdk.Stack {
       protocol: elbv2.ApplicationProtocol.HTTPS,
       targets: [this.asg],
       healthCheck: {
-        path: '/', // Health check path, adjust as needed
-        interval: cdk.Duration.seconds(30), // Health check interval
+        path: '/',
+        interval: cdk.Duration.seconds(30),
+        port: '3000',
+        protocol: elbv2.Protocol.HTTPS,
       },
     })
 
@@ -168,6 +157,12 @@ export class Ec2Stack extends cdk.Stack {
         new targets.LoadBalancerTarget(alb),
       ),
       recordName: 'test',
+    })
+
+    // Outputs
+    new cdk.CfnOutput(this, 'ec2RoleArn', {
+      value: ec2Role.roleArn,
+      exportName: 'ec2RoleArn',
     })
   }
 }

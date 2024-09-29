@@ -31,19 +31,15 @@ export class CodeDeployStack extends cdk.Stack {
     )
 
     // Create a CodeDeploy deployment group
-    const deploymentGroup = new codedeploy.ServerDeploymentGroup(
-      this,
-      'CodeDeployDeploymentGroup',
-      {
-        application: codedeployApp,
-        autoScalingGroups: [props.asg],
-        deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
-        installAgent: true,
-        autoRollback: {
-          failedDeployment: true,
-        },
+    new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
+      application: codedeployApp,
+      autoScalingGroups: [props.asg],
+      deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
+      installAgent: true,
+      autoRollback: {
+        failedDeployment: true,
       },
-    )
+    })
 
     const githubRole = new iam.Role(this, 'GitHubOidcRole', {
       assumedBy: new iam.FederatedPrincipal(
@@ -51,6 +47,8 @@ export class CodeDeployStack extends cdk.Stack {
         {
           StringEquals: {
             'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+          },
+          StringLike: {
             'token.actions.githubusercontent.com:sub': `repo:${props.repoName}:*`,
           },
         },
@@ -70,6 +68,8 @@ export class CodeDeployStack extends cdk.Stack {
           'codedeploy:BatchGetApplications',
           'codedeploy:GetDeploymentConfig',
           'codedeploy:ListDeploymentConfigs',
+          'codedeploy:RegisterApplicationRevision',
+          'codedeploy:GetApplicationRevision',
         ],
         resources: ['*'], // You can restrict this to specific resources as needed
       }),
@@ -82,5 +82,19 @@ export class CodeDeployStack extends cdk.Stack {
         resources: [`${deploymentBucket.bucketArn}/*`],
       }),
     )
+
+    const role = iam.Role.fromRoleArn(
+      this,
+      'ec2Role',
+      cdk.Fn.importValue('ec2RoleArn'),
+    )
+
+    const policy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+      resources: [`${deploymentBucket.bucketArn}/*`],
+    })
+
+    role.addToPrincipalPolicy(policy)
   }
 }

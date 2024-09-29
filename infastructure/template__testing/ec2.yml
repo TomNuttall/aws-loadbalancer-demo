@@ -90,15 +90,6 @@ Resources:
             curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
             dnf install -y nodejs
             npm install -g pm2
-            # Install CodeDeploy
-            dnf install -y ruby wget
-            cd /home/ec2-user
-            wget https://aws-codedeploy-${AWS::Region}.s3.${AWS::Region}.amazonaws.com/latest/install
-            chmod +x ./install
-            ./install auto > /tmp/logfile
-            service codedeploy-agent start
-            # Install Cloudwatch Agent
-            dnf install -y amazon-cloudwatch-agent
 
   AutoScalingTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
