@@ -8,4 +8,9 @@ describe('route integration tests', () => {
     const res = await request(app).get('/')
     expect(res.statusCode).toEqual(StatusCodes.OK)
   })
+
+  it('can get health route', async () => {
+    const res = await request(app).get('/health')
+    expect(res.statusCode).toEqual(StatusCodes.OK)
+  })
 })

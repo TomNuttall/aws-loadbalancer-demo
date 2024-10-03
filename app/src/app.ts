@@ -2,6 +2,7 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import path from 'path'
 import bodyparser from 'body-parser'
+import helmet from 'helmet'
 import router from './routes/index.route'
 
 const app: Express = express()
@@ -12,6 +13,7 @@ app.set('view engine', 'pug')
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(helmet())
 app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
 app.use(cors())
