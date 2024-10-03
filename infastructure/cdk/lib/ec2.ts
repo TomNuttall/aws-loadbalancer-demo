@@ -31,14 +31,14 @@ export class Ec2Stack extends cdk.Stack {
     appSecurityGroup.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(3000),
-      'Allow HTTPS Access',
+      'Allow HTTP Access',
     )
 
-    appSecurityGroup.addIngressRule(
-      ec2.Peer.anyIpv4(),
-      ec2.Port.tcp(22),
-      'Allow SSH Access',
-    )
+    // appSecurityGroup.addIngressRule(
+    //   ec2.Peer.anyIpv4(),
+    //   ec2.Port.tcp(22),
+    //   'Allow SSH Access',
+    // )
 
     props.vpc.privateSubnets.map(({ subnetId }, idx) => {
       return new ec2.CfnInstanceConnectEndpoint(
@@ -110,7 +110,7 @@ export class Ec2Stack extends cdk.Stack {
 
     // Add a listener to the load balancer
     const listener = alb.addListener('HttpListener', {
-      port: 80, // Listen on HTTP port 80
+      port: 80,
       open: true,
       defaultAction: elbv2.ListenerAction.redirect({
         protocol: 'HTTPS',
@@ -118,6 +118,7 @@ export class Ec2Stack extends cdk.Stack {
         permanent: true,
       }),
     })
+
     // Certificate
     const certificateArn = props.certificateArn
     const certificate = acm.Certificate.fromCertificateArn(
