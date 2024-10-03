@@ -136,13 +136,13 @@ export class Ec2Stack extends cdk.Stack {
     // Attach the Auto Scaling Group to the Load Balancer
     this.targetGroup = httpsListener.addTargets('TargetGroup', {
       port: 3000,
-      protocol: elbv2.ApplicationProtocol.HTTPS,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       targets: [this.asg],
       healthCheck: {
-        path: '/',
+        path: '/health',
         interval: cdk.Duration.seconds(30),
         port: '3000',
-        protocol: elbv2.Protocol.HTTPS,
+        protocol: elbv2.Protocol.HTTP,
       },
     })
 

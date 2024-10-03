@@ -9,7 +9,7 @@ export class VPCStack extends cdk.Stack {
     super(scope, id, props)
 
     this.vpc = new ec2.Vpc(this, 'vpc', {
-      natGateways: 0, //2,
+      natGateways: 2,
       maxAzs: 2,
       subnetConfiguration: [
         {
@@ -17,11 +17,11 @@ export class VPCStack extends cdk.Stack {
           name: 'public',
           subnetType: ec2.SubnetType.PUBLIC,
         },
-        // {
-        //   cidrMask: 24,
-        //   name: 'private',
-        //   subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-        // },
+        {
+          cidrMask: 24,
+          name: 'private',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
       ],
     })
     this.vpc.addGatewayEndpoint('s3Endpoint', {
