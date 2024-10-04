@@ -4,6 +4,7 @@
 
 - CDK: Used to deploy infastructure on AWS.
 - GitHub action: deploy.yml runs on change to app folder. Builds + tests app and creates CodeDeploy deployment from S3.
+- template\_\_testing: Cloudformation templates for testing launching ec2
 
 Note: App Load Balancer and NAT Gateways have provisioned hourly costs even when idle
 
