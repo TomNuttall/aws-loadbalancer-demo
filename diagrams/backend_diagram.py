@@ -23,11 +23,11 @@ with Diagram("", filename="backend_diagram", outformat="png"):
 
             with Cluster("Target Group"):
                 auto_scaling_group = AutoScaling("Auto Scaling Group")
-                app_load_balancer >> Edge(label="HTTPS") >> auto_scaling_group
+                app_load_balancer >> auto_scaling_group
                 auto_scaling_group - [
                     EC2("EC2 Instance"), EC2("EC2 Instance")]
 
-        route_53 >> app_load_balancer
+        route_53 >> Edge(label="HTTPS") >> app_load_balancer
 
     user >> Edge(label="") >> route_53
     github_action >> Edge(label="Deploys backend app to S3") >> s3_bucket >> Edge(

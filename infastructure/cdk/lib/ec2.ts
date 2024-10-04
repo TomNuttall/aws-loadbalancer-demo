@@ -28,29 +28,6 @@ export class Ec2Stack extends cdk.Stack {
       allowAllOutbound: true,
     })
 
-    appSecurityGroup.addIngressRule(
-      ec2.Peer.anyIpv4(),
-      ec2.Port.tcp(3000),
-      'Allow HTTP Access',
-    )
-
-    // appSecurityGroup.addIngressRule(
-    //   ec2.Peer.anyIpv4(),
-    //   ec2.Port.tcp(22),
-    //   'Allow SSH Access',
-    // )
-
-    props.vpc.privateSubnets.map(({ subnetId }, idx) => {
-      return new ec2.CfnInstanceConnectEndpoint(
-        this,
-        `InstanceConnectEndpoint_${idx}`,
-        {
-          subnetId: subnetId, // Use private subnets
-          securityGroupIds: [appSecurityGroup.securityGroupId],
-        },
-      )
-    })
-
     const userData = ec2.UserData.forLinux()
     userData.addCommands(
       'dnf update -y',
