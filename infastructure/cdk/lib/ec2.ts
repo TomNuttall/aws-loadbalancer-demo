@@ -34,7 +34,6 @@ export class Ec2Stack extends cdk.Stack {
       'curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -',
       'dnf install -y nodejs',
       'npm install -g pm2',
-      'dnf install -y ruby wget',
     )
 
     const ec2Role = new iam.Role(this, 'EC2Role', {
