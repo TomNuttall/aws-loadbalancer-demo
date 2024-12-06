@@ -16,20 +16,32 @@ with Diagram("", filename="vpc_diagram", outformat="png", direction="TB"):
             alb = ALB("App Load Balancer")
             asg = AutoScaling("Auto Scaling Group")
 
-            with Cluster("Avalability Zone"):
+            with Cluster("Avalability Zone A"):
                 with Cluster("Public Subnet"):
-                    natgw = NATGateway("NAT\nGateway")
-                    publicSubnet = PublicSubnet("Public Subnet")
+                    natgwa = NATGateway("NAT\nGateway")
+                    publicSubneta = PublicSubnet("Public Subnet")
 
                 with Cluster("Private Subnet"):
-                    privateSubnet = PrivateSubnet("Private Subnet")
-                    targetGroup = EC2("EC2 Instance")
-                    asg - targetGroup
+                    privateSubneta = PrivateSubnet("Private Subnet")
+                    targetGroupa = EC2("EC2 Instance")
+                    asg - targetGroupa
+
+            with Cluster("Avalability Zone B"):
+                with Cluster("Public Subnet"):
+                    natgwb = NATGateway("NAT\nGateway")
+                    publicSubnetb = PublicSubnet("Public Subnet")
+
+                with Cluster("Private Subnet"):
+                    privateSubnetb = PrivateSubnet("Private Subnet")
+                    targetGroupb = EC2("EC2 Instance")
+                    asg - targetGroupb
 
         asg << alb
-        targetGroup >> s3Endpoint >> s3
+        targetGroupa >> s3Endpoint >> s3
+        targetGroupb >> s3Endpoint >> s3
 
-        targetGroup >> natgw >> igw
+        targetGroupa >> natgwa >> igw
+        targetGroupb >> natgwb >> igw
 
         alb << igw
 
